@@ -10,30 +10,6 @@ use \Harpya\SDK\Constants;
  */
 class Utils
 {
-    // const CONFIG_APPLICATION_ID = 'HSDK_APP_ID';
-    // const CONFIG_APPLICATION_SECRET = 'HSDK_APP_SECRET';
-    // const CONFIG_APPLICATION_BASE_URL = 'HSDK_APP_BASE_URL';
-    // const CONFIG_APPLICATION_AUTHORIZATION_PATH = 'HSDK_APP_AUTH_PATH';
-    // const CONFIG_IDENTITY_PROVIDER_EXTERNAL_URL = 'HSDK_IP_EXTERNAL_URL';
-    // const CONFIG_IDENTITY_PROVIDER_INTERNAL_URL = 'HSDK_IP_INTERNAL_URL';
-
-    // // Informs to IP which URL should be called after authorized
-    // const KEY_AUTHORIZE = 'authorize';
-
-    // // Application's identitfier
-    // const KEY_APPLICATION_ID = 'application_id';
-
-    // // Application's key to validate it's authenticity
-    // const KEY_APPLICATION_SECRET = 'application_secret';
-
-    // // Browser IP
-    // const KEY_CLIENT_IP = 'client_ip';
-
-    // const KEY_SESSION_ID = 'session_id';
-    // const KEY_TOKEN = 'token';
-    // const KEY_USER_EMAIL = 'email';
-    // const KEY_ACTION = 'action';
-
     /**
      * Prepare the associative array with correct values to communicate with Identity Provider
      */
