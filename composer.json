@@ -1,0 +1,24 @@
+{
+    "name": "harpya/sdk",
+    "description": "SDK to use with Harpya microservices and components.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [{
+        "name": "Eduardo Luz",
+        "email": "eduardo@eduardo-luz.com"
+    }],
+    "autoload": {
+        "psr-4": {
+            "Harpya\\SDK\\": "src/"
+        }
+    },
+
+    "require": {
+        "php": ">=7.2",
+        "guzzlehttp/guzzle": "^6.5"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8.5"
+    }
+
+}
