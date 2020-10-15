@@ -47,7 +47,7 @@ class Broker
                 break;
                 case static::ACTION_ERROR:
                     default:
-                    print_r($resp1stStep);
+                    $this->showErrorPage($resp1stStep);
                 break;
             }
         }
@@ -76,6 +76,17 @@ class Broker
         }
 
         $_SESSION['auth'] = $authData;
+    }
+
+    /**
+     *
+     */
+    public function showErrorPage(array $identityProviderResponse)
+    {
+        http_response_code(400);
+        header('Content-type: application/json');
+        echo \json_encode($identityProviderResponse);
+        exit;
     }
 
     /**
