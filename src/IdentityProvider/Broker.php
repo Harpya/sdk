@@ -126,7 +126,50 @@ class Broker
             echo "\n " . $e->getTraceAsString();
             exit;
         }
+        $jsonReturn = $appReturn->getBody()->getContents();
+        $arrReturn = json_decode($jsonReturn, true);
 
-        return json_decode($appReturn->getBody()->getContents(), true);
+        return $arrReturn;
+    }
+
+    /**
+     *
+     */
+    public function getAuthData($tokenID)
+    {
+        $pack = Utils::getInitialAuthRequestEnvelope();
+
+        $nm = Constants::KEY_SESSION_ID;
+        $pack[Constants::KEY_TOKEN] = $tokenID;
+
+        $url = getenv(Constants::CONFIG_IDENTITY_PROVIDER_INTERNAL_URL) . '/api/v1/auth_confirm';
+        try {
+            $appReturn = $this->getClient()->request('POST', $url, [
+                'form_params' => $pack
+            ]);
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            $rawMsg = $e->getResponse()->getBody()->getContents();
+            $arrMsg = json_decode($rawMsg, true);
+            if (is_array($arrMsg) && isset($arrMsg['msg'])) {
+                throw new \Exception($arrMsg['msg'], $e->getCode());
+            } else {
+                throw new \Exception($e->getMessage(), $e->getCode());
+            }
+        } catch (\Exception $e) {
+            throw new \Exception(get_class($e) . ' :: ' . $e->getMessage(), $e->getCode());
+            // echo '<pre>';
+            // echo $e->getMessage();
+            // echo "\n " . $e->getTraceAsString();
+            // exit;
+        }
+        $jsonReturn = $appReturn->getBody()->getContents();
+        $arrReturn = json_decode($jsonReturn, true);
+
+        // echo '<pre>';
+        // print_r($pack);
+        // print_r($arrReturn);
+        // exit;
+
+        return $arrReturn;
     }
 }

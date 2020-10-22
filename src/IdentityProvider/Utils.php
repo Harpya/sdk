@@ -33,6 +33,15 @@ class Utils
         return $pack;
     }
 
+    public static function buildAuthSessionPack(array $arr = []) : array
+    {
+        $pack = $arr;
+
+        $pack['ttl'] = time() + static::getTTL();
+
+        return $pack;
+    }
+
     /**
      *
      */
@@ -41,10 +50,12 @@ class Utils
         $valid = false;
 
         if (empty($authData)) {
+            throw new \Exception('Invalid Session Data contents');
             return false;
         }
 
         if (!is_array($authData)) {
+            throw new \Exception('Invalid Session Data format');
             return false;
         }
 
@@ -52,6 +63,8 @@ class Utils
         // && ($auth['ip'] == $_SERVER['REMOTE_ADDR'])
         ) {
             $valid = true;
+        } else {
+            throw new \Exception('Session expired');
         }
 
         return $valid;
