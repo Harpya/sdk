@@ -23,7 +23,9 @@ class Broker
     public function getClient()
     {
         if (!$this->client) {
-            $this->client = new \GuzzleHttp\Client();
+            $this->client = new \GuzzleHttp\Client(['headers' => [
+                'X-Skip-Session' => 1
+            ]]);
         }
 
         return $this->client;
@@ -102,7 +104,8 @@ class Broker
         // header('X-Identity-Provider-Token: abcdef0123456789');
         // header('X-Identity-Provider-Webhook: http://localhost:1991/auth');
         // header('X-Identity-Provider-Callback: http://localhost:1991/');
-        header('Location: ' . getenv(Constants::CONFIG_IDENTITY_PROVIDER_EXTERNAL_URL) . '/login/' . $code);
+        $url = getenv(Constants::CONFIG_IDENTITY_PROVIDER_EXTERNAL_URL) . '/auth/login/' . $code;
+        header('Location: ' . $url);
         exit;
         return;
     }
