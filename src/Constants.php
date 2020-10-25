@@ -21,6 +21,9 @@ class Constants
     const CONFIG_PREFIX_TOKEN = 'HSDK_PREFIX_TOKEN';
     const CONFIG_SALT_TOKEN = 'HSDK_SALT_TOKEN';
 
+    const CONFIG_IP_SESSION_TTL = 'HSDK_SESSION_TTL';
+    const CONFIG_DATETIME_FORMAT = 'HSDK_DATETIME_FORMAT';
+
     // Informs to IP which URL should be called after authorized
     const KEY_AUTHORIZE = 'authorize';
 
