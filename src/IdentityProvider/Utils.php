@@ -33,6 +33,15 @@ class Utils
         return $pack;
     }
 
+    public static function buildAuthSessionPack(array $arr = []) : array
+    {
+        $pack = $arr;
+
+        $pack['ttl'] = time() + static::getTTL();
+
+        return $pack;
+    }
+
     /**
      *
      */
@@ -41,10 +50,12 @@ class Utils
         $valid = false;
 
         if (empty($authData)) {
+            throw new \Exception('Invalid Session Data contents');
             return false;
         }
 
         if (!is_array($authData)) {
+            throw new \Exception('Invalid Session Data format');
             return false;
         }
 
@@ -52,6 +63,8 @@ class Utils
         // && ($auth['ip'] == $_SERVER['REMOTE_ADDR'])
         ) {
             $valid = true;
+        } else {
+            throw new \Exception('Session expired');
         }
 
         return $valid;
@@ -95,5 +108,29 @@ class Utils
         $salt = \getenv(Constants::CONFIG_SALT_TOKEN) ?? '';
         $token = $prefix . ':' . hash('sha256', $salt . time() . \random_bytes(20));
         return $token;
+    }
+
+    /**
+     * Simply checks if last character of a given URL is '/'.
+     * If not, just add it.
+     */
+    public static function addSlashAtEnd(&$url) : void
+    {
+        if (!$url || (is_string($url) && substr($url, -1) !== '/')) {
+            $url .= '/';
+        }
+    }
+
+    /**
+     * Calculate the TTL (time to live) in seconds. It is used to set
+     * the session lifetime.
+     */
+    public static function getTTL($minutes = 1440) : int
+    {
+        $ttl = intval(getenv('CONFIG_SESSION_TTL'));
+        if (!$ttl) {
+            $ttl = $minutes; // 1 day
+        }
+        return $ttl * 60; // converts to seconds
     }
 }

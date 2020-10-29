@@ -23,7 +23,9 @@ class Broker
     public function getClient()
     {
         if (!$this->client) {
-            $this->client = new \GuzzleHttp\Client();
+            $this->client = new \GuzzleHttp\Client(['headers' => [
+                'X-Skip-Session' => 1
+            ]]);
         }
 
         return $this->client;
@@ -47,7 +49,7 @@ class Broker
                 break;
                 case static::ACTION_ERROR:
                     default:
-                    print_r($resp1stStep);
+                    $this->showErrorPage($resp1stStep);
                 break;
             }
         }
@@ -81,6 +83,17 @@ class Broker
     /**
      *
      */
+    public function showErrorPage(array $identityProviderResponse)
+    {
+        http_response_code(400);
+        header('Content-type: application/json');
+        echo \json_encode($identityProviderResponse);
+        exit;
+    }
+
+    /**
+     *
+     */
     public function redirectLoginPage(array $identityProviderResponse)
     {
         http_response_code(302);
@@ -91,7 +104,8 @@ class Broker
         // header('X-Identity-Provider-Token: abcdef0123456789');
         // header('X-Identity-Provider-Webhook: http://localhost:1991/auth');
         // header('X-Identity-Provider-Callback: http://localhost:1991/');
-        header('Location: ' . getenv(Constants::CONFIG_IDENTITY_PROVIDER_EXTERNAL_URL) . '/login/' . $code);
+        $url = getenv(Constants::CONFIG_IDENTITY_PROVIDER_EXTERNAL_URL) . '/auth/login/' . $code;
+        header('Location: ' . $url);
         exit;
         return;
     }
@@ -115,7 +129,50 @@ class Broker
             echo "\n " . $e->getTraceAsString();
             exit;
         }
+        $jsonReturn = $appReturn->getBody()->getContents();
+        $arrReturn = json_decode($jsonReturn, true);
 
-        return json_decode($appReturn->getBody()->getContents(), true);
+        return $arrReturn;
+    }
+
+    /**
+     *
+     */
+    public function getAuthData($tokenID)
+    {
+        $pack = Utils::getInitialAuthRequestEnvelope();
+
+        $nm = Constants::KEY_SESSION_ID;
+        $pack[Constants::KEY_TOKEN] = $tokenID;
+
+        $url = getenv(Constants::CONFIG_IDENTITY_PROVIDER_INTERNAL_URL) . '/api/v1/auth_confirm';
+        try {
+            $appReturn = $this->getClient()->request('POST', $url, [
+                'form_params' => $pack
+            ]);
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            $rawMsg = $e->getResponse()->getBody()->getContents();
+            $arrMsg = json_decode($rawMsg, true);
+            if (is_array($arrMsg) && isset($arrMsg['msg'])) {
+                throw new \Exception($arrMsg['msg'], $e->getCode());
+            } else {
+                throw new \Exception($e->getMessage(), $e->getCode());
+            }
+        } catch (\Exception $e) {
+            throw new \Exception(get_class($e) . ' :: ' . $e->getMessage(), $e->getCode());
+            // echo '<pre>';
+            // echo $e->getMessage();
+            // echo "\n " . $e->getTraceAsString();
+            // exit;
+        }
+        $jsonReturn = $appReturn->getBody()->getContents();
+        $arrReturn = json_decode($jsonReturn, true);
+
+        // echo '<pre>';
+        // print_r($pack);
+        // print_r($arrReturn);
+        // exit;
+
+        return $arrReturn;
     }
 }
